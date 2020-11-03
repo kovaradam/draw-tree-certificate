@@ -1,4 +1,4 @@
-import { SVG_DIMS } from './index';
+import { SVG_DIMS } from '../../utils/constants';
 
 type SVGPoint = { left: number; top: number };
 type CertificateBit = { value: string; left: number };
@@ -15,12 +15,15 @@ export function createSVGPointsFromCert(
   const bits: CertificateBit[] = [{ value: '0', left: 0 }];
   let top = 0;
   let maxTop = top;
-  for (let i = 0; i < certificate.length; i++) {
-    bits.push({ value: certificate[i], left: i + 1 });
-    top += certificate[i] === '1' ? -1 : 1;
+  for (let i = 1; i < certificate.length; i++) {
+    bits.push({ value: certificate[i], left: i });
+    top += certificate[i - 1] === '1' ? -1 : 1;
     maxTop = top > maxTop ? top : maxTop;
-    points.push({ left: i + 1, top });
+    points.push({ left: i, top });
   }
+
+  points.push({ left: certificate.length, top: 0 });
+  bits.push({ value: '-', left: certificate.length });
 
   let strPoints = '';
 

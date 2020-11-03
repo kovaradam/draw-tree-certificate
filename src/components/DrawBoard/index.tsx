@@ -1,80 +1,64 @@
-import React, { useMemo } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { createSVGPointsFromCert } from './helpers';
+import { Main } from '../../style/Main';
+import Board from './Board';
+import { FiX } from 'react-icons/fi';
 
-export const SVG_DIMS = { width: 580, height: 400 };
+type Props = { onClose: () => void };
 
-type Props = { input: string };
+const DrawBoard: React.FC<Props> = ({ onClose }) => {
+  const [inputValue, setInputValue] = useState('000101100110011100011011');
 
-const DrawBoard: React.FC<Props> = ({ input }) => {
-  const [points, levels, bits] = useMemo(() => createSVGPointsFromCert(input), [input]);
+  const handleInput = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setInputValue(event.target.value);
+  };
 
   return (
     <Wrapper>
-      <SVG {...SVG_DIMS} viewBox={`0 0 ${SVG_DIMS.width} ${SVG_DIMS.height}`}>
-        <defs>
-          <marker
-            id="circle"
-            viewBox="0 0 10 10"
-            refX="5"
-            refY="5"
-            markerWidth="8"
-            markerHeight="8"
-          >
-            <circle stroke="#2196f3" strokeWidth="2" fill="none" cx="5" cy="5" r="4" />
-          </marker>
-        </defs>
-        <SVGPolyline
-          points={points}
-          markerStart="url(#circle)"
-          markerEnd="url(#circle)"
-          markerMid="url(#circle)"
-        />
-        {levels.map((levelValue) => (
-          <SVGLevelPolyline
-            key={levelValue}
-            points={`0,${levelValue} ${SVG_DIMS.width},${levelValue}`}
-          />
-        ))}
-        {bits.map((bit) => (
-          <SVGText x={bit.left} y="15" key={bit.left}>
-            {bit.value === '1' ? ' |' : 0}
-          </SVGText>
-        ))}
-      </SVG>
+      <CloseButton onClick={onClose}>
+        <FiX />
+      </CloseButton>
+      <Board input={inputValue} />
+      <Input type="text" value={inputValue} onChange={handleInput} />
     </Wrapper>
   );
 };
 
 export default DrawBoard;
 
-const Wrapper = styled.div`
-  overflow: hidden;
-  width: min-content;
-  padding: 1rem;
-  background-color: white;
+const Wrapper = styled(Main)`
+  flex-direction: column;
+  position: relative;
+`;
+
+const Input = styled.input`
+  width: 17em;
+  height: 1.5rem;
+  border-width: 1px;
+  border-color: #8080804a;
+  border-radius: 0.2rem;
+  margin-top: 1.5rem;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
   padding: 0.5rem;
+  margin: 0.5rem;
+  right: 0;
+  top: 0;
+  z-index: 1;
+  background-color: white;
+  border: none;
   border-radius: 5px;
-  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.25);
-`;
+  display: flex;
+  justify-content: center;
+  outline: none;
 
-const SVG = styled.svg`
-  transform: scaleY(-1);
-`;
-
-const SVGPolyline = styled.polyline`
-  stroke-width: 1.5;
-  fill-opacity: 0;
-  stroke: #2196f3;
-`;
-
-const SVGLevelPolyline = styled(SVGPolyline)`
-  stroke-width: 1;
-  fill-opacity: 0;
-  stroke: #808080a6;
-  stroke-dasharray: 10;
-`;
-
-const SVGText = styled.text`
-  stroke: grey;
+  &:hover {
+    cursor: pointer;
+    background-color: #dbdbdb;
+  }
+  &:active {
+    background-color: #eeeded;
+  }
 `;
