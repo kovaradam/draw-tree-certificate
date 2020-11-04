@@ -4,9 +4,9 @@ import { Main } from '../../style/Main';
 import Board from './Board';
 import { FiX } from 'react-icons/fi';
 
-type Props = { onClose: () => void };
+type Props = { id: number; onClose: () => void };
 
-const DrawBoard: React.FC<Props> = ({ onClose }) => {
+const DrawBoard: React.FC<Props> = ({ id, onClose }) => {
   const [inputValue, setInputValue] = useState('000101100110011100011011');
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -18,7 +18,7 @@ const DrawBoard: React.FC<Props> = ({ onClose }) => {
       <CloseButton onClick={onClose}>
         <FiX />
       </CloseButton>
-      <Board input={inputValue} />
+      <Board id={id} input={inputValue} />
       <Input type="text" value={inputValue} onChange={handleInput} />
     </Wrapper>
   );

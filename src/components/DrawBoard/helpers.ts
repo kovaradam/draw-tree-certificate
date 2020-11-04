@@ -3,6 +3,14 @@ import { HORIZONTAL_SHIFT, SVG_DIMS, VERTICAL_SHIFT } from '../../utils/constant
 type SVGPoint = { left: number; top: number };
 type CertificateBit = { value: string; left: number };
 
+export function scale(
+  inputLength: number,
+  flatInterval: number,
+  maxValue: number,
+): number {
+  return inputLength <= flatInterval ? maxValue : (maxValue * flatInterval) / inputLength;
+}
+
 export function normalize(value: number, maxValue: number, panelDim: number): number {
   return (panelDim / maxValue) * value;
 }
