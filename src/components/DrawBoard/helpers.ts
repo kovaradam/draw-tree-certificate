@@ -1,4 +1,4 @@
-import { SVG_DIMS } from '../../utils/constants';
+import { HORIZONTAL_SHIFT, SVG_DIMS, VERTICAL_SHIFT } from '../../utils/constants';
 
 type SVGPoint = { left: number; top: number };
 type CertificateBit = { value: string; left: number };
@@ -9,12 +9,12 @@ export function normalize(value: number, maxValue: number, panelDim: number): nu
 
 export function createSVGPointsFromCert(
   certificate: string,
-): [string, number[], CertificateBit[]] {
-  const verticalAdjust = 50;
+): [string, SVGPoint[], number[], CertificateBit[]] {
   const points: SVGPoint[] = [{ top: 0, left: 0 }];
   const bits: CertificateBit[] = [{ value: '0', left: 0 }];
   let top = 0;
   let maxTop = top;
+
   for (let i = 1; i < certificate.length; i++) {
     bits.push({ value: certificate[i], left: i });
     top += certificate[i - 1] === '1' ? -1 : 1;
@@ -28,17 +28,24 @@ export function createSVGPointsFromCert(
   let strPoints = '';
 
   points.forEach((point) => {
-    const top = normalize(point.left, points.length, SVG_DIMS.width);
-    const height = normalize(point.top, maxTop + 1, SVG_DIMS.height) + verticalAdjust;
-    strPoints = strPoints.concat(`${top},${height} `);
+    point.left = normalize(point.left, points.length, SVG_DIMS.width) + HORIZONTAL_SHIFT;
+    point.top =
+      SVG_DIMS.height -
+      (normalize(point.top, maxTop + 1, SVG_DIMS.height) + VERTICAL_SHIFT);
+    strPoints = strPoints.concat(`${point.left},${point.top} `);
   });
-  bits.forEach((bit) => (bit.left = normalize(bit.left, bits.length, SVG_DIMS.width)));
+  bits.forEach(
+    (bit) =>
+      (bit.left = normalize(bit.left, bits.length, SVG_DIMS.width) + HORIZONTAL_SHIFT),
+  );
 
   const levels: number[] = [];
 
   for (let i = 0; i <= maxTop; i++) {
-    levels.push(normalize(i, maxTop + 1, SVG_DIMS.height) + verticalAdjust);
+    levels.push(
+      SVG_DIMS.height - (normalize(i, maxTop + 1, SVG_DIMS.height) + VERTICAL_SHIFT),
+    );
   }
 
-  return [strPoints, levels, bits];
+  return [strPoints, points, levels, bits];
 }

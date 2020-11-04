@@ -1,12 +1,21 @@
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import { SVG_DIMS } from '../../utils/constants';
+import {
+  SVG_DIMS,
+  BIT_LINE_TOP_PAD,
+  BIT_LINE_BOTTOM_END,
+  BIT_Y,
+  BIT_FIX_X,
+} from '../../utils/constants';
 import { createSVGPointsFromCert } from './helpers';
 
 type Props = { input: string };
 
 const Board: React.FC<Props> = ({ input }) => {
-  const [points, levels, bits] = useMemo(() => createSVGPointsFromCert(input), [input]);
+  const [strPoints, svgPoints, levels, bits] = useMemo(
+    () => createSVGPointsFromCert(input),
+    [input],
+  );
 
   return (
     <Wrapper>
@@ -24,11 +33,19 @@ const Board: React.FC<Props> = ({ input }) => {
           </marker>
         </defs>
         <SVGPolyline
-          points={points}
+          points={strPoints}
           markerStart="url(#circle)"
           markerEnd="url(#circle)"
           markerMid="url(#circle)"
         />
+        {svgPoints.map((point) => (
+          <SVGBitPolyline
+            points={`${point.left},${point.top + BIT_LINE_TOP_PAD} ${
+              point.left
+            },${BIT_LINE_BOTTOM_END}`}
+            key={point.left}
+          />
+        ))}
         {levels.map((levelValue) => (
           <SVGLevelPolyline
             key={levelValue}
@@ -36,8 +53,8 @@ const Board: React.FC<Props> = ({ input }) => {
           />
         ))}
         {bits.map((bit) => (
-          <SVGText x={bit.left} y="15" key={bit.left}>
-            {bit.value === '1' ? ' |' : bit.value}
+          <SVGText x={bit.left + BIT_FIX_X} y={BIT_Y} key={bit.left}>
+            {bit.value === '1' ? '1' : bit.value}
           </SVGText>
         ))}
       </SVG>
@@ -56,9 +73,7 @@ const Wrapper = styled.div`
   border-radius: 5px;
 `;
 
-const SVG = styled.svg`
-  transform: scaleY(-1);
-`;
+const SVG = styled.svg``;
 
 const SVGPolyline = styled.polyline`
   stroke-width: 1.5;
@@ -71,6 +86,13 @@ const SVGLevelPolyline = styled(SVGPolyline)`
   fill-opacity: 0;
   stroke: #808080a6;
   stroke-dasharray: 10;
+`;
+
+const SVGBitPolyline = styled(SVGPolyline)`
+  stroke-width: 0.3;
+  fill-opacity: 0;
+  stroke: #808080a6;
+  stroke-dasharray: 8;
 `;
 
 const SVGText = styled.text`
