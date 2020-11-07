@@ -12,7 +12,6 @@ const App: React.FC = () => {
     const newBoardIds = boardIds.concat(lastId + 1);
     setLastId((lastId) => ++lastId);
     setBoardIds(newBoardIds);
-    console.log(lastId);
   };
 
   const removeDrawBoard = (id: number) => {

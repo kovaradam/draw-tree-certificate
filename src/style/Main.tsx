@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const Main = styled.main`
   margin: 2rem;
   display: flex;
-  min-width: 36rem;
+  width: 37rem;
   height: 30rem;
   overflow: hidden;
   align-items: center;
